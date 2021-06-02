@@ -1,14 +1,10 @@
 package Server;
 
-import Controller.MachineController;
-import Controller.RecipeController;
-import Model.Company;
-import Controller.CompanyController;
-import Model.Machine;
-import Model.Recipe;
+import Controller.*;
+import Model.*;
 import io.javalin.Javalin;
-import Controller.ContractController;
 import org.ice.smart.contract.ICESmartContract;
+import org.json.JSONObject;
 import org.web3j.crypto.Credentials;
 
 import java.math.BigInteger;
@@ -37,18 +33,17 @@ public class API {
                     smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
                     context.cookieStore(privateKey, smartContract.getContractAddress());
                 });
-        app.get("/addCompany" +
-                        "/:privateKey" +
-                        "/:companyName",
+        app.post("/addCompany",
                 context -> {
-                    String privateKey = context.pathParam("privateKey");
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
                     String contractAddress = context.cookieStore(privateKey);
                     if (contractAddress == null) {
                         context.result("Cookie not existing, deploy or load a contract first!");
                         return;
                     }
                     ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
-                    String companyName = context.pathParam("companyName");
+                    String companyName = jsonObject.getString("name");
                     BigInteger companyId = CompanyController.addCompany(companyName, smartContract);
                     ICESmartContract.Company companyReturned = CompanyController.getCompanyById(companyId, smartContract);
                     if (companyReturned == null) {
@@ -80,16 +75,13 @@ public class API {
                     }
                 });
 
-        app.get("/addMachine" +
-                        "/:privateKey" +
-                        "/:name" +
-                        "/:description" +
-                        "/:companyId",
+        app.post("/addMachine",
                 context -> {
-                    String privateKey = context.pathParam("privateKey");
-                    String name = context.pathParam("name");
-                    String description = context.pathParam("description");
-                    BigInteger companyId = new BigInteger(context.pathParam("companyId"));
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    String description = jsonObject.getString("description");
+                    BigInteger companyId = jsonObject.getBigInteger("companyId");
                     String contractAddress = context.cookieStore(privateKey);
                     if (contractAddress == null) {
                         context.result("Cookie not existing, deploy or load a contract first!");
@@ -121,21 +113,21 @@ public class API {
                     if (machineReturned == null) {
                         context.result("No machine found with that id");
                     } else {
-                        Machine machine = new Machine(machineReturned.id, machineReturned.name, machineReturned.description, machineReturned.companyId);
+                        Machine machine = new Machine(machineReturned.id,
+                                machineReturned.name,
+                                machineReturned.description,
+                                machineReturned.companyId);
                         context.json(machine);
                     }
                 });
 
-        app.get("/addRecipe" +
-                        "/:privateKey" +
-                        "/:name" +
-                        "/:description" +
-                        "/:companyId",
+        app.post("/addRecipe",
                 context -> {
-                    String privateKey = context.pathParam("privateKey");
-                    String name = context.pathParam("name");
-                    String description = context.pathParam("description");
-                    BigInteger companyId = new BigInteger(context.pathParam("companyId"));
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    String description = jsonObject.getString("description");
+                    BigInteger companyId = jsonObject.getBigInteger("companyId");
                     String contractAddress = context.cookieStore(privateKey);
                     if (contractAddress == null) {
                         context.result("Cookie not existing, deploy or load a contract first!");
@@ -165,12 +157,180 @@ public class API {
                     ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
                     ICESmartContract.Recipe recipeReturned = RecipeController.getRecipe(recipeId, smartContract);
                     if (recipeReturned == null) {
-                        context.result("No machine found with that id");
+                        context.result("No recipe found with that id");
                     } else {
                         Recipe recipe = new Recipe(recipeReturned.id, recipeReturned.name, recipeReturned.description, recipeReturned.companyId);
                         context.json(recipe);
                     }
                 });
 
+        app.post("/addRecipeStep",
+                context -> {
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    String description = jsonObject.getString("description");
+                    BigInteger recipeId = jsonObject.getBigInteger("recipeId");
+                    BigInteger machineId = jsonObject.getBigInteger("machineId");
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    BigInteger id = RecipeStepController.addRecipeStep(name, description, recipeId, machineId, smartContract);
+                    if (id == null) {
+                        context.result("Something went wrong on recipe step creation!");
+                        return;
+                    }
+                    RecipeStep recipeStep = new RecipeStep(id, name, description, recipeId, machineId);
+                    context.json(recipeStep);
+                });
+
+        app.get("/getRecipeStep" +
+                        "/:privateKey" +
+                        "/:id",
+                context -> {
+                    String privateKey = context.pathParam("privateKey");
+                    BigInteger recipeStepId = new BigInteger(context.pathParam("id"));
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    ICESmartContract.RecipeStep recipeStepReturned = RecipeStepController.getRecipeStep(recipeStepId, smartContract);
+                    if (recipeStepReturned == null) {
+                        context.result("No recipe step found with that id");
+                    } else {
+                        RecipeStep recipeStep = new RecipeStep(recipeStepReturned.id,
+                                recipeStepReturned.name,
+                                recipeStepReturned.description,
+                                recipeStepReturned.recipeId,
+                                recipeStepReturned.machineId);
+                        context.json(recipeStep);
+                    }
+                });
+
+        app.post("/addMeasureConstraint",
+                context -> {
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    BigInteger maxMeasure = jsonObject.getBigInteger("maxMeasure");
+                    BigInteger minMeasure = jsonObject.getBigInteger("minMeasure");
+                    String unitOfMeasure = jsonObject.getString("unitOfMeasure");
+                    BigInteger recipeStepId = jsonObject.getBigInteger("recipeStepId");
+                    BigInteger machineId = jsonObject.getBigInteger("machineId");
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    BigInteger id = MeasureConstraintController.addMeasureConstraint(name,
+                            maxMeasure,
+                            minMeasure,
+                            unitOfMeasure,
+                            recipeStepId,
+                            machineId,
+                            smartContract);
+                    if (id == null) {
+                        context.result("Something went wrong on adding the measure constraint!");
+                        return;
+                    }
+                    MeasureConstraint measureConstraint = new MeasureConstraint(id,
+                            name,
+                            maxMeasure,
+                            minMeasure,
+                            unitOfMeasure,
+                            recipeStepId,
+                            machineId);
+                    context.json(measureConstraint);
+                });
+
+        app.get("/getMeasureConstraint" +
+                        "/:privateKey" +
+                        "/:id",
+                context -> {
+                    String privateKey = context.pathParam("privateKey");
+                    BigInteger measureConstraintId = new BigInteger(context.pathParam("id"));
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    ICESmartContract.MeasureConstraint measureConstraintReturned;
+                    measureConstraintReturned = MeasureConstraintController.getMeasureConstraint(measureConstraintId, smartContract);
+                    if (measureConstraintReturned == null) {
+                        context.result("No recipe step found with that id");
+                    } else {
+                        MeasureConstraint measureConstraint = new MeasureConstraint(measureConstraintReturned.id,
+                                measureConstraintReturned.name,
+                                measureConstraintReturned.maxMeasure,
+                                measureConstraintReturned.minMeasure,
+                                measureConstraintReturned.unitOfMeasure,
+                                measureConstraintReturned.recipeStepId,
+                                measureConstraintReturned.machineId);
+                        context.json(measureConstraint);
+                    }
+                });
+        app.post("/addProduct",
+                context -> {
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    String description = jsonObject.getString("description");
+                    BigInteger companyId = jsonObject.getBigInteger("companyId");
+                    BigInteger recipeId = jsonObject.getBigInteger("recipeId");
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    BigInteger id = ProductController.addProduct(name,
+                            description,
+                            companyId,
+                            recipeId,
+                            smartContract);
+                    if (id == null) {
+                        context.result("Something went wrong on adding the measure constraint!");
+                        return;
+                    }
+                    Product product = new Product(id,
+                            name,
+                            description,
+                            companyId,
+                            recipeId);
+
+                    context.json(product);
+                });
+
+        app.get("/getProduct" +
+                        "/:privateKey" +
+                        "/:id",
+                context -> {
+                    String privateKey = context.pathParam("privateKey");
+                    BigInteger productId = new BigInteger(context.pathParam("id"));
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    ICESmartContract.Product productReturned;
+                    productReturned = ProductController.getProduct(productId, smartContract);
+                    if (productReturned == null) {
+                        context.result("No recipe step found with that id");
+                    } else {
+                        Product product = new Product(productReturned.id, productReturned.name,
+                                productReturned.description,
+                                productReturned.companyId,
+                                productReturned.recipeId);
+                        context.json(product);
+                    }
+                });
     }
 }
