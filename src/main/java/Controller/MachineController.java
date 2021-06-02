@@ -9,11 +9,11 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import java.math.BigInteger;
 import java.util.List;
 
-public class CompanyController {
+public class MachineController {
 
-    public static BigInteger addCompany(String name, ICESmartContract smartContract) {
+    public static BigInteger addMachine(String name, String description, BigInteger companyId, ICESmartContract smartContract) {
         try {
-            TransactionReceipt transactionReceipt = smartContract.addCompany(name).send();
+            TransactionReceipt transactionReceipt = smartContract.addMachine(companyId, name, description).send();
             EventManager eventManager = new EventManager(transactionReceipt, new EventId());
             List<Type> eventParameters = eventManager.getEventParameters();
             return (BigInteger) eventParameters.get(0).getValue();
@@ -23,9 +23,9 @@ public class CompanyController {
         return null;
     }
 
-    public static ICESmartContract.Company getCompanyById(BigInteger id, ICESmartContract smartContract) {
+    public static ICESmartContract.Machine getMachineById(BigInteger id, ICESmartContract smartContract) {
         try {
-            return smartContract.getCompanyById(id).send();
+            return smartContract.getMachineById(id).send();
         } catch (Exception e) {
             e.printStackTrace();
         }
