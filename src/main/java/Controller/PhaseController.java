@@ -37,4 +37,14 @@ public class PhaseController {
         return null;
     }
 
+    public static List<ICESmartContract.Phase> getPhasesByProductId(BigInteger id, ICESmartContract smartContract) {
+        try {
+            return smartContract.getPhasesByProductId(id).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

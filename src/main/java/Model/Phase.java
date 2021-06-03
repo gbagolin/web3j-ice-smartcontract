@@ -11,6 +11,7 @@ public class Phase {
     public BigInteger machineId;
     public BigInteger recipeStepId;
 
+
     public Phase(BigInteger id,
                  String name,
                  String description,

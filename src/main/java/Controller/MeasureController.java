@@ -45,4 +45,13 @@ public class MeasureController {
         return null;
     }
 
+    public static List<ICESmartContract.Measure> getAllMeasureByPhaseId(BigInteger id, ICESmartContract smartContract) {
+        try {
+            return smartContract.getMeasuresByPhaseId(id).send();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
