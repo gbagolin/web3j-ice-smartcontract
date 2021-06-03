@@ -296,7 +296,7 @@ public class API {
                             recipeId,
                             smartContract);
                     if (id == null) {
-                        context.result("Something went wrong on adding the measure constraint!");
+                        context.result("Something went wrong on the creation of the product!");
                         return;
                     }
                     Product product = new Product(id,
@@ -323,13 +323,148 @@ public class API {
                     ICESmartContract.Product productReturned;
                     productReturned = ProductController.getProduct(productId, smartContract);
                     if (productReturned == null) {
-                        context.result("No recipe step found with that id");
+                        context.result("No found found with that id");
                     } else {
                         Product product = new Product(productReturned.id, productReturned.name,
                                 productReturned.description,
                                 productReturned.companyId,
                                 productReturned.recipeId);
                         context.json(product);
+                    }
+                });
+
+        app.post("/addPhase",
+                context -> {
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    String description = jsonObject.getString("description");
+                    BigInteger productId = jsonObject.getBigInteger("productId");
+                    BigInteger machineId = jsonObject.getBigInteger("machineId");
+                    BigInteger recipeStepId = jsonObject.getBigInteger("recipeStepId");
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    BigInteger id = PhaseController.addPhase(name,
+                            description,
+                            productId,
+                            machineId,
+                            recipeStepId,
+                            smartContract);
+                    if (id == null) {
+                        context.result("Something went wrong on the creation of the phase!");
+                        return;
+                    }
+                    Phase phase = new Phase(id,
+                            name,
+                            description,
+                            productId,
+                            machineId,
+                            recipeStepId
+                    );
+
+                    context.json(phase);
+                });
+
+        app.get("/getPhase" +
+                        "/:privateKey" +
+                        "/:id",
+                context -> {
+                    String privateKey = context.pathParam("privateKey");
+                    BigInteger phaseId = new BigInteger(context.pathParam("id"));
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    ICESmartContract.Phase phaseReturned;
+                    phaseReturned = PhaseController.getPhase(phaseId, smartContract);
+                    if (phaseReturned == null) {
+                        context.result("No found found with that id");
+                    } else {
+                        Phase phase = new Phase(phaseReturned.id,
+                                phaseReturned.name,
+                                phaseReturned.description,
+                                phaseReturned.productId,
+                                phaseReturned.machineId,
+                                phaseReturned.recipeStepId);
+                        context.json(phase);
+                    }
+                });
+
+        app.post("/addMeasure",
+                context -> {
+                    JSONObject jsonObject = new JSONObject(context.body());
+                    String privateKey = jsonObject.getString("privateKey");
+                    String name = jsonObject.getString("name");
+                    BigInteger measure = jsonObject.getBigInteger("measure");
+                    String unitOfMeasure = jsonObject.getString("unitOfMeasure");
+                    BigInteger measureStartTime = jsonObject.getBigInteger("measureStartTime");
+                    BigInteger measureEndTime = jsonObject.getBigInteger("measureEndTime");
+                    BigInteger phaseId = jsonObject.getBigInteger("phaseId");
+                    BigInteger measureConstraintId = jsonObject.getBigInteger("measureConstraintId");
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    BigInteger id = MeasureController.addMeasure(name,
+                            measure,
+                            unitOfMeasure,
+                            measureStartTime,
+                            measureEndTime,
+                            phaseId,
+                            measureConstraintId,
+                            smartContract);
+                    if (id == null) {
+                        context.result("Something went wrong on the measure creation!");
+                        return;
+                    }
+                    Measure measureObject = new Measure(id,
+                            name,
+                            measure,
+                            unitOfMeasure,
+                            measureStartTime,
+                            measureEndTime,
+                            phaseId,
+                            measureConstraintId
+                    );
+
+                    context.json(measureObject);
+                });
+
+        app.get("/getMeasure" +
+                        "/:privateKey" +
+                        "/:id",
+                context -> {
+                    String privateKey = context.pathParam("privateKey");
+                    BigInteger measureId = new BigInteger(context.pathParam("id"));
+                    String contractAddress = context.cookieStore(privateKey);
+                    if (contractAddress == null) {
+                        context.result("Cookie not existing, deploy or load a contract first!");
+                        return;
+                    }
+                    ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+                    ICESmartContract.Measure measureReturned;
+                    measureReturned = MeasureController.getMeasure(measureId, smartContract);
+                    if (measureReturned == null) {
+                        context.result("No found found with that id");
+                    } else {
+                        Measure measureObject = new Measure(measureReturned.id,
+                                measureReturned.name,
+                                measureReturned.measure,
+                                measureReturned.unitOfMeasure,
+                                measureReturned.measureStartTime,
+                                measureReturned.measureEndTime,
+                                measureReturned.phaseId,
+                                measureReturned.measureConstraintId
+                        );
+                        context.json(measureObject);
                     }
                 });
     }
