@@ -1,9 +1,13 @@
 package Server;
+
 import io.javalin.Javalin;
 
 public class API {
-    private static final Javalin app = Javalin.create();
-
+    private static final Javalin app = Javalin.create(config ->
+    {
+        config.contextPath = "/";
+        config.enableCorsForAllOrigins();
+    });
     public static void start() {
         app.start();
         app.get("/deployContract" +
