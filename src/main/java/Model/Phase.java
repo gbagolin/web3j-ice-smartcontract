@@ -25,4 +25,7 @@ public class Phase {
         this.machineId = machineId;
         this.recipeStepId = recipeStepId;
     }
+
+    public Phase() {
+    }
 }

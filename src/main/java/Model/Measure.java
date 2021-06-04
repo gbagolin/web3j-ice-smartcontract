@@ -30,4 +30,7 @@ public class Measure {
         this.phaseId = phaseId;
         this.measureConstraintId = measureConstraintId;
     }
+
+    public Measure() {
+    }
 }

@@ -18,4 +18,6 @@ public class MeasureWithConstraintInformation extends Measure {
                 );
         this.measureConstraint = measureConstraint;
     }
+
+
 }

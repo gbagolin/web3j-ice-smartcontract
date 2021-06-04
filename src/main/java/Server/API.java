@@ -1,6 +1,10 @@
 package Server;
 
+import Model.*;
 import io.javalin.Javalin;
+import org.json.JSONObject;
+
+import java.math.BigInteger;
 
 public class API {
     private static final Javalin app = Javalin.create(config ->
@@ -8,6 +12,7 @@ public class API {
         config.contextPath = "/";
         config.enableCorsForAllOrigins();
     });
+
     public static void start() {
         app.start();
         app.get("/deployContract" +
@@ -22,23 +27,24 @@ public class API {
                 context -> {
                     ContractAPI.loadContract(context);
                 });
+
+        app.post("/getSchema", context -> {
+            SchemaAPI.getSchema(context);
+        });
         app.post("/addCompany",
                 context -> {
                     CompanyAPI.addCompany(context);
                 });
-
         app.get("/getCompany" +
                         "/:privateKey" +
                         "/:companyId",
                 context -> {
                     CompanyAPI.getCompany(context);
                 });
-
         app.post("/addMachine",
                 context -> {
                     MachineAPI.addMachine(context);
                 });
-
         app.get("/getMachine" +
                         "/:privateKey" +
                         "/:id",
@@ -81,6 +87,7 @@ public class API {
                 context -> {
                     MeasureContraintAPI.getMeasureConstraint(context);
                 });
+
         app.post("/addProduct",
                 context -> {
                     ProductAPI.addProduct(context);

@@ -14,4 +14,7 @@ public class Machine {
         this.description = description;
         this.companyId = companyId;
     }
+
+    public Machine() {
+    }
 }

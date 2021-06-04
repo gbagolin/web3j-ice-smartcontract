@@ -26,4 +26,7 @@ public class MeasureConstraint {
         this.recipeStepId = recipeStepId;
         this.machineId = machineId;
     }
+
+    public MeasureConstraint() {
+    }
 }

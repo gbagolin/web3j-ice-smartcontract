@@ -14,4 +14,7 @@ public class Recipe {
         this.description = description;
         this.companyId = companyId;
     }
+
+    public Recipe() {
+    }
 }

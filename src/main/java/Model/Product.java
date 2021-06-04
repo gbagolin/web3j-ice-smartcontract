@@ -21,4 +21,7 @@ public class Product {
         this.companyId = companyId;
         this.recipeId = recipeId;
     }
+
+    public Product() {
+    }
 }

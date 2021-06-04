@@ -20,4 +20,7 @@ public class RecipeStep {
         this.recipeId = recipeId;
         this.machineId = machineId;
     }
+
+    public RecipeStep() {
+    }
 }
