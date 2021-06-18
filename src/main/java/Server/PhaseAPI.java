@@ -20,12 +20,7 @@ public class PhaseAPI {
         BigInteger productId = jsonObject.getBigInteger("productId");
         BigInteger machineId = jsonObject.getBigInteger("machineId");
         BigInteger recipeStepId = jsonObject.getBigInteger("recipeStepId");
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         BigInteger id = PhaseController.addPhase(name,
                 description,
                 productId,
@@ -50,12 +45,7 @@ public class PhaseAPI {
     public static void getPhase(Context context) {
         String privateKey = context.pathParam("privateKey");
         BigInteger phaseId = new BigInteger(context.pathParam("id"));
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         ICESmartContract.Phase phaseReturned;
         phaseReturned = PhaseController.getPhase(phaseId, smartContract);
         if (phaseReturned == null) {

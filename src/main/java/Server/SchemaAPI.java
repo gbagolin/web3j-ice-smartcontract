@@ -11,28 +11,28 @@ public class SchemaAPI {
         String schemaName = jsonObject.getString("schema");
         Schema schema = Schema.valueOf(schemaName);
         switch (schema) {
-            case COMPANY:
+            case Company:
                 context.json(new Company());
                 break;
-            case MACHINE:
+            case Machine:
                 context.json(new Machine());
                 break;
-            case RECIPE:
+            case Recipe:
                 context.json(new Recipe());
                 break;
-            case RECIPE_STEP:
+            case RecipeStep:
                 context.json(new RecipeStep());
                 break;
-            case MEASURE_CONSTRAINT:
+            case MeasureConstraint:
                 context.json(new MeasureConstraint());
                 break;
-            case PRODUCT:
+            case Product:
                 context.json(new Product());
                 break;
-            case PHASE:
+            case Phase:
                 context.json(new Phase());
                 break;
-            case MEASURE:
+            case Measure:
                 context.json(new Measure());
                 break;
         }

@@ -18,12 +18,7 @@ public class RecipeStepAPI {
         String description = jsonObject.getString("description");
         BigInteger recipeId = jsonObject.getBigInteger("recipeId");
         BigInteger machineId = jsonObject.getBigInteger("machineId");
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         BigInteger id = RecipeStepController.addRecipeStep(name, description, recipeId, machineId, smartContract);
         if (id == null) {
             context.result("Something went wrong on recipe step creation!");
@@ -36,12 +31,7 @@ public class RecipeStepAPI {
     public static void getRecipeStep(Context context) {
         String privateKey = context.pathParam("privateKey");
         BigInteger recipeStepId = new BigInteger(context.pathParam("id"));
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         ICESmartContract.RecipeStep recipeStepReturned = RecipeStepController.getRecipeStep(recipeStepId, smartContract);
         if (recipeStepReturned == null) {
             context.result("No recipe step found with that id");

@@ -20,12 +20,7 @@ public class ProductAPI {
         String description = jsonObject.getString("description");
         BigInteger companyId = jsonObject.getBigInteger("companyId");
         BigInteger recipeId = jsonObject.getBigInteger("recipeId");
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         BigInteger id = ProductController.addProduct(name,
                 description,
                 companyId,
@@ -47,12 +42,8 @@ public class ProductAPI {
     public static void getProduct(Context context) {
         String privateKey = context.pathParam("privateKey");
         BigInteger productId = new BigInteger(context.pathParam("id"));
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         ICESmartContract.Product productReturned;
         productReturned = ProductController.getProduct(productId, smartContract);
         if (productReturned == null) {
@@ -69,12 +60,7 @@ public class ProductAPI {
     public static void getProductInformation(Context context) {
         String privateKey = context.pathParam("privateKey");
         BigInteger productId = new BigInteger(context.pathParam("id"));
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
 
         ICESmartContract.Product productReturned;
         productReturned = ProductController.getProduct(productId, smartContract);

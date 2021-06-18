@@ -15,8 +15,7 @@ public class API {
 
     public static void start() {
         app.start();
-        app.get("/deployContract" +
-                        "/:privateKey",
+        app.post("/deployContract",
                 context -> {
                     ContractAPI.deployContract(context);
                 });

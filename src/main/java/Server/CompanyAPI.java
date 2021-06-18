@@ -15,12 +15,7 @@ public class CompanyAPI {
     public static void addCompany(Context context) {
         JSONObject jsonObject = new JSONObject(context.body());
         String privateKey = jsonObject.getString("privateKey");
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         String companyName = jsonObject.getString("name");
         BigInteger companyId = CompanyController.addCompany(companyName, smartContract);
         ICESmartContract.Company companyReturned = CompanyController.getCompanyById(companyId, smartContract);
@@ -35,12 +30,7 @@ public class CompanyAPI {
     public static void getCompany(Context context){
         String privateKey = context.pathParam("privateKey");
         BigInteger companyId = new BigInteger(context.pathParam("companyId"));
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         ICESmartContract.Company companyReturned = CompanyController.getCompanyById(companyId, smartContract);
         if (companyReturned == null) {
             context.result("No company found with that id");

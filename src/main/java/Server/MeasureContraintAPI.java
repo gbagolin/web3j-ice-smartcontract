@@ -21,12 +21,7 @@ public class MeasureContraintAPI {
         String unitOfMeasure = jsonObject.getString("unitOfMeasure");
         BigInteger recipeStepId = jsonObject.getBigInteger("recipeStepId");
         BigInteger machineId = jsonObject.getBigInteger("machineId");
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         BigInteger id = MeasureConstraintController.addMeasureConstraint(name,
                 maxMeasure,
                 minMeasure,
@@ -51,12 +46,7 @@ public class MeasureContraintAPI {
     public static void getMeasureConstraint(Context context) {
         String privateKey = context.pathParam("privateKey");
         BigInteger measureConstraintId = new BigInteger(context.pathParam("id"));
-        String contractAddress = context.cookieStore(privateKey);
-        if (contractAddress == null) {
-            context.result("Cookie not existing, deploy or load a contract first!");
-            return;
-        }
-        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), contractAddress);
+        ICESmartContract smartContract = ContractController.loadExistingContract(Credentials.create(privateKey), ContractAddress.CONTRACT_ADDRESS);
         ICESmartContract.MeasureConstraint measureConstraintReturned;
         measureConstraintReturned = MeasureConstraintController.getMeasureConstraint(measureConstraintId, smartContract);
         if (measureConstraintReturned == null) {
