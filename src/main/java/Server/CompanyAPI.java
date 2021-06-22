@@ -20,7 +20,7 @@ public class CompanyAPI {
         BigInteger companyId = CompanyController.addCompany(companyName, smartContract);
         ICESmartContract.Company companyReturned = CompanyController.getCompanyById(companyId, smartContract);
         if (companyReturned == null) {
-            context.result("Something went wrong on company creation");
+            context.result("Something went wrong on company creation, Check to have permission to add a company");
         } else {
             Company company = new Company(companyReturned.id, companyReturned.name);
             context.json(company);

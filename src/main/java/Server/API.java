@@ -1,5 +1,6 @@
 package Server;
 
+import Controller.UserController;
 import Model.*;
 import io.javalin.Javalin;
 import org.json.JSONObject;
@@ -25,6 +26,27 @@ public class API {
                         "/:address",
                 context -> {
                     ContractAPI.loadContract(context);
+                });
+
+        app.post("/addAdmin",
+                context -> {
+                    UserAPI.addAdmin(context);
+                });
+
+        app.post("/addDataProvider",
+                context -> {
+                    UserAPI.addDataProvider(context);
+                });
+
+        app.get("/getUserType" +
+                        "/:privateKey",
+                context -> {
+                    UserAPI.getUserType(context);
+                });
+
+        app.get("/getUserTypeMapping",
+                context -> {
+                    context.json(new UserTypeSchema());
                 });
 
         app.post("/getSchema", context -> {
