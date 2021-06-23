@@ -35,6 +35,8 @@ public class SchemaAPI {
             case Measure:
                 context.json(new Measure());
                 break;
+            case Admin: case DataProvider: case GeneralUser:
+                context.json(new User());
         }
     }
 }
