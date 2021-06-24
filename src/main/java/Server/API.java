@@ -1,5 +1,6 @@
 package Server;
 
+import Controller.ContractController;
 import Controller.UserController;
 import Model.*;
 import io.javalin.Javalin;
@@ -12,6 +13,7 @@ public class API {
     {
         config.contextPath = "/";
         config.enableCorsForAllOrigins();
+        ContractController.readContractAddress();
     });
 
     public static void start() {
@@ -27,7 +29,10 @@ public class API {
                 context -> {
                     ContractAPI.loadContract(context);
                 });
-
+        app.get("/getContractAddress",
+                context -> {
+                    ContractAPI.getContractAddress(context);
+                });
         app.post("/addAdmin",
                 context -> {
                     UserAPI.addAdmin(context);
